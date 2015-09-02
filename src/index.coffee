@@ -245,8 +245,8 @@ class Etcd
       synchronous: allOpts.synchronous
       form: { value: value } if value?
       agentOptions: @sslopts if @sslopts?
+      auth: @auth if @auth?
     }
-
 
   # Swap callback and options if no options was given.
   _argParser: (options, callback) ->
