@@ -146,7 +146,12 @@ class Client
 
   _handleResponse: (err, resp, body, callback) ->
     return if not callback?
-    if body?.errorCode? # http ok, but etcd gave us an error
+    if resp?.statusCode? and resp.statusCode in [401, 403] # handle auth error
+      error = new Error body?.message || 'Etcd auth error'
+      error.errorCode = resp.statusCode
+      error.error = body
+      callback error, "", (resp?.headers or {})
+    else if body?.errorCode? # http ok, but etcd gave us an error
       error = new Error body?.message || 'Etcd error'
       error.errorCode = body.errorCode
       error.error = body

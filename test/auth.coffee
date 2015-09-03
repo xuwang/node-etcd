@@ -59,6 +59,19 @@ describe 'Basic functions', ->
         .reply(200, response)
       etcd.setUserPass(auth)
       etcd.disableAuth done
+      etcd.setUserPass()
+
+    it 'should handle basicAuth error', (done) ->
+      response = '{"message":"Insufficient credentials"}'
+      getNock()
+        .delete('/v2/auth/enable')
+        .reply(401, response)
+      etcd.setUserPass()
+      etcd.disableAuth (err, val) ->
+        err.should.be.instanceOf Error
+        err.errorCode.should.equal 401
+        err.message.should.equal "Insufficient credentials"
+        done()
 
   describe '#users()', ->
     it 'should return user list from etcd', (done) ->
